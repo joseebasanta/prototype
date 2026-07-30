@@ -14,7 +14,7 @@
   --container-h: 195px;
   --card-w: 250px;
   --card-h: 164px;
-  --card-gap: 44px;              /* revealed strip per card in the spread state */
+  --card-gap: 40px;              /* revealed strip per card in the spread state */
 
   /* — Display scale (viewing only — keeps internal coords faithful to Figma) — */
   --scale: 1.5;
@@ -166,16 +166,17 @@ body {
 .item--front { top: calc(var(--card-gap) * 2); z-index: 3; }
 
 /*
-  Resting (collapsed deck) transforms.
-  Gentler taper + wider reveal so the yellow & green cards show more of their
-  colour (dot + pill) at rest, while the front card still travels furthest on hover.
-    back : scale 0.90, nudged up   2px
-    mid  : scale 0.94, pulled up  12px
-    front: scale 0.98, pulled up  26px
+  Resting (collapsed deck) transforms — reproduce the Figma default frame exactly:
+  a tapered deck where each underlying card is narrower and only its top edge peeks.
+    back : 194px wide → scale 0.776, nudged up   1.6px
+    mid  : 218px wide → scale 0.872, pulled up  19.5px
+    front: 234px wide → scale 0.936, pulled up  32.8px
+  The dots read as half-domes (clipped by the card above); the pills stay fully
+  visible because they sit at the top of each row (see .item-row).
 */
-.item--back  { transform: translateY(-2px)  scale(0.90); }
-.item--mid   { transform: translateY(-12px) scale(0.94); }
-.item--front { transform: translateY(-26px) scale(0.98); }
+.item--back  { transform: translateY(-1.6px)  scale(0.776); }
+.item--mid   { transform: translateY(-19.5px) scale(0.872); }
+.item--front { transform: translateY(-32.8px) scale(0.936); }
 
 /* Spread: cards grow to full width and fan downwards (front travels furthest) */
 .deck-widget:hover .item,
@@ -205,7 +206,7 @@ body {
   width: 199px;
   height: 26.208px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;       /* top-align so pills survive the tight overlap */
   justify-content: space-between;
 }
 
