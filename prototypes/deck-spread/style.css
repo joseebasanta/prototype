@@ -1,0 +1,246 @@
+:root {
+  /* — Mapped from Figma variables — */
+  --amber: #f6b51e;              /* state/away/base        */
+  --green: #1fc16b;              /* state/success/base     */
+  --blue: #335cff;               /* state/information/base */
+  --container-border: #d9d9d9;   /* border/default         */
+
+  /* — Surfaces — */
+  --card-bg: #faf8f6;
+  --card-border: #ffffff;
+
+  /* — Widget geometry (native Figma px) — */
+  --container-w: 297px;
+  --container-h: 195px;
+  --card-w: 250px;
+  --card-h: 164px;
+  --card-gap: 40px;              /* revealed strip per card in the spread state */
+
+  /* — Display scale (viewing only — keeps internal coords faithful to Figma) — */
+  --scale: 1.5;
+
+  /* — Motion: snappy spring on spread, calm settle on collapse — */
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 420ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #f4f4f5, #e8e8ea);
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.hint {
+  font-size: 13px;
+  color: #8a8a8e;
+  margin: 0;
+}
+
+/* Reserves the widget's scaled footprint so surrounding layout stays clear. */
+.deck-scale {
+  width: calc(var(--container-w) * var(--scale));
+  height: calc(var(--container-h) * var(--scale));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- widget (parent container) ---------- */
+
+.deck-widget {
+  position: relative;
+  width: var(--container-w);
+  height: var(--container-h);
+  background: #ffffff;
+  border: 2px solid var(--container-border);
+  border-radius: 24px;
+  overflow: hidden;              /* clips the cards as they slide down */
+  cursor: pointer;
+  outline: none;
+  transform: scale(var(--scale));
+  transform-origin: center center;
+  box-shadow: 0 18px 50px -20px rgba(17, 17, 20, 0.28);
+  transition: box-shadow var(--dur) var(--ease-out);
+}
+
+.deck-widget:focus-visible {
+  box-shadow: 0 18px 50px -20px rgba(17, 17, 20, 0.28),
+    0 0 0 2px var(--blue);
+}
+
+.deck-widget:hover,
+.deck-widget.is-open {
+  box-shadow: 0 26px 60px -22px rgba(17, 17, 20, 0.36);
+}
+
+/* ---------- header ---------- */
+
+.widget-header {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  width: 249px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.widget-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 25px;
+  color: #000;
+}
+
+.widget-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.widget-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- card stack ---------- */
+
+.stack {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--card-w);
+  height: 244px;
+}
+
+/*
+  Base layout = the SPREAD (hover) state: full-size cards evenly offset by 40px.
+  The collapsed/resting look is produced by transforms on each item below, so
+  hovering simply removes the transform and the deck springs open downwards.
+*/
+.item {
+  position: absolute;
+  left: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  background: var(--card-bg);
+  border: 5px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px -8px rgba(17, 17, 20, 0.25),
+    inset 0 3px 4px -2px rgba(0, 0, 0, 0.12);
+  transform-origin: 50% 0;       /* top-center: scaling holds each card's top edge */
+  transition: transform var(--dur) var(--spring),
+    box-shadow var(--dur) var(--ease-out);
+  will-change: transform;
+}
+
+/* Spread positions (front card lowest) + reversed z-index (front on top) */
+.item--back  { top: 0;   z-index: 1; }
+.item--mid   { top: var(--card-gap);          z-index: 2; }
+.item--front { top: calc(var(--card-gap) * 2); z-index: 3; }
+
+/*
+  Resting (collapsed deck) transforms — derived from the Figma default frame:
+    back : 194px wide → scale 0.776, nudged up   1.6px
+    mid  : 218px wide → scale 0.872, pulled up  19.5px
+    front: 234px wide → scale 0.936, pulled up  32.8px
+  Result: a tapered "compressed deck" where only the top edge of each card peeks.
+*/
+.item--back  { transform: translateY(-1.6px)  scale(0.776); }
+.item--mid   { transform: translateY(-19.5px) scale(0.872); }
+.item--front { transform: translateY(-32.8px) scale(0.936); }
+
+/* Spread: cards grow to full width and fan downwards (front travels furthest) */
+.deck-widget:hover .item,
+.deck-widget:focus-visible .item,
+.deck-widget.is-open .item {
+  transform: translateY(0) scale(1);
+}
+
+/* Tiny stagger so the deck fans rather than snapping as one block */
+.deck-widget:hover .item--mid,
+.deck-widget:focus-visible .item--mid,
+.deck-widget.is-open .item--mid {
+  transition-delay: 30ms;
+}
+.deck-widget:hover .item--back,
+.deck-widget:focus-visible .item--back,
+.deck-widget.is-open .item--back {
+  transition-delay: 60ms;
+}
+
+/* ---------- card contents (circle + pill) ---------- */
+
+.item-row {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 199px;
+  height: 26.208px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item-dot {
+  width: 26.208px;
+  height: 26.208px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.item-bar {
+  width: 80px;
+  height: 8px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.item-dot--amber,
+.item-bar--amber { background: var(--amber); }
+.item-dot--green,
+.item-bar--green { background: var(--green); }
+.item-dot--blue,
+.item-bar--blue  { background: var(--blue); }
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    transition-duration: 1ms;
+  }
+  .deck-widget:hover .item--mid,
+  .deck-widget:focus-visible .item--mid,
+  .deck-widget.is-open .item--mid,
+  .deck-widget:hover .item--back,
+  .deck-widget:focus-visible .item--back,
+  .deck-widget.is-open .item--back {
+    transition-delay: 0ms;
+  }
+}
