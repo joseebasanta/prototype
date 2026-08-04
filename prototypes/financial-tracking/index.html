@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial tracking — hover to morph graph</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!--
+    Financial tracking widget.
+    Only the data visualisation animates on hover — the card frame,
+    header and title stay static. The morph is pure CSS transitions on
+    SVG geometry (path `d`, circle `cx`/`cy`, rect `x`/`y`/`height`):
+    no JavaScript, no animation libraries.
+  -->
+  <main>
+    <article class="card" aria-label="Financial tracking chart, hover to see expanded view">
+
+      <!-- Static header -->
+      <header class="card__header">
+        <span class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 28 28" width="28" height="28">
+            <rect x="0" y="0" width="28" height="28" rx="8" fill="url(#iconBg)" />
+            <!-- ascending trend bars -->
+            <rect x="7"  y="15" width="3.4" height="6"  rx="1.7" fill="#fff" opacity=".9" />
+            <rect x="12.3" y="11.5" width="3.4" height="9.5" rx="1.7" fill="#fff" />
+            <rect x="17.6" y="8"  width="3.4" height="13" rx="1.7" fill="#fff" opacity=".9" />
+            <defs>
+              <linearGradient id="iconBg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffa468" />
+                <stop offset="1" stop-color="#fa7319" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <h2 class="card__title">Financial tracking</h2>
+      </header>
+
+      <!-- Animated graph panel -->
+      <div class="card__graph">
+        <svg class="chart" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" role="img"
+             aria-label="Line chart that expands from two peaks to three on hover">
+          <defs>
+            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+              <stop class="g-stop" offset="0"   stop-opacity=".34" />
+              <stop class="g-stop" offset=".55" stop-opacity=".13" />
+              <stop class="g-stop" offset="1"   stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="dropFill" x1="0" y1="0" x2="0" y2="1">
+              <stop class="g-stop" offset="0" stop-opacity=".55" />
+              <stop class="g-stop" offset="1" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+
+          <!-- gradient area beneath the line (morphs in tandem with the line) -->
+          <path class="chart__area" fill="url(#areaFill)" />
+
+          <!-- vertical drop lines -->
+          <rect class="drop drop--new" width="1.6" fill="url(#dropFill)" />
+          <rect class="drop drop--a"   width="1.6" fill="url(#dropFill)" />
+          <rect class="drop drop--b"   width="1.6" fill="url(#dropFill)" />
+
+          <!-- main graph line -->
+          <path class="chart__line" fill="none" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- data points -->
+          <circle class="point point--new" r="5" />
+          <circle class="point point--a"   r="5" />
+          <circle class="point point--b"   r="5" />
+        </svg>
+      </div>
+
+    </article>
+  </main>
+</body>
+</html>
