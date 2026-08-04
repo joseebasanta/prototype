@@ -1,30 +1,31 @@
 /* ============================================================
-   Financial tracking widget
-   Colours, easing and durations live in CSS variables.
-   The whole hover interaction is driven from `.card:hover`.
+   Financial tracking widget  —  matched 1:1 to Figma
+   (node 5135:4637 default  /  5135:4654 hover)
+
+   Both Figma frames are the SAME chart: on hover the whole
+   visualisation slides right by exactly 50 user units, bringing
+   the third (left) data point in from off the clipped edge.
+   Only the graph animates; the card frame + title stay static.
    ============================================================ */
 
 :root {
-  /* Palette (from the Figma design tokens) */
-  --orange:       #fa7319;   /* state/warning/base — line, points, fills   */
-  --orange-400:   #ffa468;
-  --orange-300:   #ffc197;
-  --orange-100:   #ffe6d5;
-  --orange-50:    #fff3eb;
-  --point-stroke: #ffffff;
-  --text:         #171717;   /* text/strong-950 */
-  --card-bg:      #ffffff;
-  --panel-top:    #fff7f0;
-  --panel-bottom: #ffe9d7;
-  --page-bg:      #f2f2f4;
-  --shadow:       0 16px 32px -12px rgba(14, 18, 27, 0.16);
+  /* Palette — Figma design tokens */
+  --orange:        #fa7319;   /* state/warning/base   */
+  --orange-400:    #ffa468;   /* orange/400           */
+  --orange-100:    #ffe6d5;   /* orange/100           */
+  --orange-50:     #fff3eb;   /* state/warning/lighter*/
+  --warning-light: #ffd9c0;   /* state/warning/light  */
+  --point-stroke:  #ffffff;
+  --text:          #171717;   /* text/strong-950      */
+  --card-bg:       #ffffff;   /* bg/white-0           */
+  --page-bg:       #f2f1ee;
+
+  --card-shadow:  0 16px 32px -12px rgba(14, 18, 27, 0.12);
+  --panel-inset:  inset 0 0 22px 0 rgba(113, 51, 10, 0.10);
 
   /* Motion */
-  --dur-morph:  700ms;
-  --dur-point:  650ms;
-  --dur-pop:    520ms;
-  --ease-morph: cubic-bezier(0.65, 0, 0.35, 1);   /* smooth ease-in-out   */
-  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot   */
+  --dur-slide:  720ms;
+  --ease-slide: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 * { box-sizing: border-box; }
@@ -41,40 +42,56 @@ body {
   color: var(--text);
 }
 
-main { padding: 40px; }
-
 /* ---------- Card (static) ---------- */
 .card {
-  width: 340px;
-  padding: 10px;
+  width: 342px;
+  padding: 12px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   background: var(--card-bg);
-  border-radius: 22px;
-  box-shadow: var(--shadow);
+  border: 2px solid var(--orange-50);
+  border-radius: 28px;
+  box-shadow: var(--card-shadow);
 }
 
 .card__header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 8px 14px;
+  gap: 8px;
+  padding: 0 8px;
 }
-
-.card__icon { display: inline-flex; }
-.card__icon svg { display: block; border-radius: 8px; }
-
+.card__icon { display: inline-flex; flex: none; }
+.card__icon svg { display: block; }
 .card__title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  flex: 1 0 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 25px;
+  letter-spacing: -0.12px;
+  color: var(--text);
 }
 
-/* ---------- Graph panel ---------- */
+/* ---------- Chart panel ---------- */
 .card__graph {
-  aspect-ratio: 16 / 10;
-  border-radius: 16px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 326 / 245;
+  border: 1px solid var(--warning-light);
+  border-radius: 20px;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-bottom) 100%);
+  /* peach ground gradient (orange/100 -> near-white) */
+  background: linear-gradient(180deg, var(--orange-100) 0%, rgba(255, 243, 235, 0.3) 100%);
+}
+/* soft inner shadow that hugs the rounded panel */
+.card__graph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: var(--panel-inset);
 }
 
 .chart {
@@ -83,104 +100,43 @@ main { padding: 40px; }
   height: 100%;
 }
 
-/* gradient stop colours (CSS var()s don't resolve inside SVG attributes) */
-.g-stop { stop-color: var(--orange); }
+/* gradient stop colours (var() doesn't resolve inside SVG attributes) */
+.area-stop  { stop-color: var(--orange); }
+.drop-top   { stop-color: var(--orange-400); }
+.drop-btm   { stop-color: var(--orange-50); }
 
-/* ============================================================
-   DEFAULT STATE — two peaks, two data points
-   Every animatable element declares its transition here so the
-   morph plays both on hover-in and hover-out.
-   ============================================================ */
-
-/* --- Line & area: morph the `d` attribute --- */
-.chart__line,
-.chart__area {
-  transition: d var(--dur-morph) var(--ease-morph);
+/* ---------- The moving graph ---------- */
+/* Everything the hover shifts lives in one group that translates
+   +50 user units — the exact delta between the two Figma frames. */
+.chart__scene {
+  transform: translateX(0);
+  transition: transform var(--dur-slide) var(--ease-slide);
 }
+.card:hover .chart__scene {
+  transform: translateX(50px);
+}
+
 .chart__line {
+  fill: none;
   stroke: var(--orange);
-  d: path("M0,128 C14,124 26,110 42,110 C66,110 84,150 110,150 C140,150 168,94 205,94 C245,94 280,138 320,138");
-}
-.chart__area {
-  d: path("M0,128 C14,124 26,110 42,110 C66,110 84,150 110,150 C140,150 168,94 205,94 C245,94 280,138 320,138 L320,200 L0,200 Z");
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* --- Data points --- */
+/* vertical drop lines: soft, blurred, fixed heights (Figma) */
+.drop {
+  filter: blur(1.2px);
+}
+
+/* data points: 8px orange dot, white ring, soft halo */
 .point {
   fill: var(--orange);
   stroke: var(--point-stroke);
-  stroke-width: 3;
-  transition:
-    cx var(--dur-point) var(--ease-morph),
-    cy var(--dur-point) var(--ease-morph),
-    opacity var(--dur-pop) ease,
-    transform var(--dur-pop) var(--ease-elastic);
-  transform-box: fill-box;
-  transform-origin: center;
+  stroke-width: 2.2;
+  filter: drop-shadow(0 1px 2px rgba(113, 51, 10, 0.28));
 }
 
-/* the two original points translate to new positions */
-.point--a { cx: 110px; cy: 150px; transition-delay: 40ms; }
-.point--b { cx: 205px; cy: 94px; }
-
-/* the third point starts hidden: faded out and scaled to nothing */
-.point--new {
-  cx: 48px; cy: 148px;
-  opacity: 0;
-  transform: scale(0);
-  transition-delay: 0ms, 0ms, 180ms, 180ms; /* cx, cy, opacity, transform */
-}
-
-/* --- Drop lines --- */
-.drop {
-  transition:
-    x var(--dur-point) var(--ease-morph),
-    y var(--dur-point) var(--ease-morph),
-    height var(--dur-point) var(--ease-morph),
-    opacity var(--dur-point) ease;
-}
-.drop--a { x: 109.2px; y: 150px; height: 50px; transition-delay: 40ms; }
-.drop--b { x: 204.2px; y: 94px;  height: 106px; }
-
-/* new drop line: collapsed at the baseline, ready to grow bottom-up */
-.drop--new {
-  x: 47.2px;
-  y: 200px;
-  height: 0px;
-  opacity: 0;
-  transition-delay: 120ms;
-}
-
-/* ============================================================
-   HOVER STATE — three peaks, three data points
-   ============================================================ */
-
-.card:hover .chart__line {
-  d: path("M0,158 C16,156 30,148 48,148 C85,116 140,138 172,134 C215,134 245,86 280,86 C300,86 312,116 320,116");
-}
-.card:hover .chart__area {
-  d: path("M0,158 C16,156 30,148 48,148 C85,116 140,138 172,134 C215,134 245,86 280,86 C300,86 312,116 320,116 L320,200 L0,200 Z");
-}
-
-/* original points slide to their expanded positions */
-.card:hover .point--a { cx: 172px; cy: 134px; }
-.card:hover .point--b { cx: 280px; cy: 86px; }
-
-/* new point pops in with an elastic bounce */
-.card:hover .point--new {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* drop lines follow their points; the new one grows from the bottom up */
-.card:hover .drop--a   { x: 171.2px; y: 134px; height: 66px; }
-.card:hover .drop--b   { x: 279.2px; y: 86px;  height: 114px; }
-.card:hover .drop--new { y: 148px; height: 52px; opacity: 1; }
-
-/* ---------- Accessibility ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .chart__line,
-  .chart__area,
-  .point,
-  .drop { transition: none; }
+  .chart__scene { transition: none; }
 }

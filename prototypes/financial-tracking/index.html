@@ -3,29 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Financial tracking — hover to morph graph</title>
+  <title>Financial tracking — hover to expand graph</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!--
-    Financial tracking widget.
-    Only the data visualisation animates on hover — the card frame,
-    header and title stay static. The morph is pure CSS transitions on
-    SVG geometry (path `d`, circle `cx`/`cy`, rect `x`/`y`/`height`):
-    no JavaScript, no animation libraries.
+    Financial tracking widget, matched 1:1 to Figma.
+    Default = node 5135:4637, hover = node 5135:4654.
+    The two frames are the same chart offset by +50 units, so the
+    hover is a pure horizontal slide: the third data point rides in
+    from off the clipped left edge. Card + title stay static.
+    Pure CSS + inline SVG, no JavaScript.
   -->
   <main>
-    <article class="card" aria-label="Financial tracking chart, hover to see expanded view">
+    <article class="card" aria-label="Financial tracking chart, hover to expand">
 
       <!-- Static header -->
       <header class="card__header">
         <span class="card__icon" aria-hidden="true">
-          <svg viewBox="0 0 28 28" width="28" height="28">
-            <rect x="0" y="0" width="28" height="28" rx="8" fill="url(#iconBg)" />
-            <!-- ascending trend bars -->
-            <rect x="7"  y="15" width="3.4" height="6"  rx="1.7" fill="#fff" opacity=".9" />
-            <rect x="12.3" y="11.5" width="3.4" height="9.5" rx="1.7" fill="#fff" />
-            <rect x="17.6" y="8"  width="3.4" height="13" rx="1.7" fill="#fff" opacity=".9" />
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <rect x="0" y="0" width="24" height="24" rx="7" fill="url(#iconBg)" />
+            <!-- currency note -->
+            <rect x="4" y="7" width="16" height="10" rx="2.4" fill="#fff" />
+            <circle cx="12" cy="12" r="2.3" fill="#fa7319" />
+            <rect x="6.2" y="9" width="1.6" height="6" rx="0.8" fill="#fa7319" opacity=".55" />
+            <rect x="16.2" y="9" width="1.6" height="6" rx="0.8" fill="#fa7319" opacity=".55" />
             <defs>
               <linearGradient id="iconBg" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#ffa468" />
@@ -37,38 +39,41 @@
         <h2 class="card__title">Financial tracking</h2>
       </header>
 
-      <!-- Animated graph panel -->
+      <!-- Chart panel (clips the off-canvas third point) -->
       <div class="card__graph">
-        <svg class="chart" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" role="img"
-             aria-label="Line chart that expands from two peaks to three on hover">
+        <svg class="chart" viewBox="0 0 326 245" preserveAspectRatio="none" role="img"
+             aria-label="Line chart that gains a third data point on hover">
           <defs>
-            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-              <stop class="g-stop" offset="0"   stop-opacity=".34" />
-              <stop class="g-stop" offset=".55" stop-opacity=".13" />
-              <stop class="g-stop" offset="1"   stop-opacity="0" />
+            <linearGradient id="areaFill" gradientUnits="userSpaceOnUse" x1="0" y1="45" x2="0" y2="245">
+              <stop class="area-stop" offset="0"   stop-opacity=".42" />
+              <stop class="area-stop" offset=".45" stop-opacity=".16" />
+              <stop class="area-stop" offset="1"   stop-opacity="0" />
             </linearGradient>
             <linearGradient id="dropFill" x1="0" y1="0" x2="0" y2="1">
-              <stop class="g-stop" offset="0" stop-opacity=".55" />
-              <stop class="g-stop" offset="1" stop-opacity="0" />
+              <stop class="drop-top" offset="0" stop-opacity=".85" />
+              <stop class="drop-btm" offset="1" stop-opacity="0" />
             </linearGradient>
           </defs>
 
-          <!-- gradient area beneath the line (morphs in tandem with the line) -->
-          <path class="chart__area" fill="url(#areaFill)" />
+          <g class="chart__scene">
+            <!-- area fill (morphs with the line as one shape) -->
+            <path class="chart__area" fill="url(#areaFill)"
+              d="M-72,158 C-58,152 -40,146 -26,143 C-2,138 20,84 44,84 C66,84 84,136 104,136 C140,136 168,50 202,50 C224,50 244,104 266,104 C292,104 306,94 326,94 L326,245 L-72,245 Z" />
 
-          <!-- vertical drop lines -->
-          <rect class="drop drop--new" width="1.6" fill="url(#dropFill)" />
-          <rect class="drop drop--a"   width="1.6" fill="url(#dropFill)" />
-          <rect class="drop drop--b"   width="1.6" fill="url(#dropFill)" />
+            <!-- vertical drop lines (fixed heights, per Figma) -->
+            <rect class="drop" x="-27" y="147" width="2" height="110" fill="url(#dropFill)" />
+            <rect class="drop" x="103" y="140" width="2" height="117" fill="url(#dropFill)" />
+            <rect class="drop" x="201" y="54"  width="2" height="203" fill="url(#dropFill)" />
 
-          <!-- main graph line -->
-          <path class="chart__line" fill="none" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round" />
+            <!-- main graph line -->
+            <path class="chart__line"
+              d="M-72,158 C-58,152 -40,146 -26,143 C-2,138 20,84 44,84 C66,84 84,136 104,136 C140,136 168,50 202,50 C224,50 244,104 266,104 C292,104 306,94 326,94" />
 
-          <!-- data points -->
-          <circle class="point point--new" r="5" />
-          <circle class="point point--a"   r="5" />
-          <circle class="point point--b"   r="5" />
+            <!-- data points (left one lives off-canvas until hover slides it in) -->
+            <circle class="point" cx="-26" cy="143" r="4" />
+            <circle class="point" cx="104" cy="136" r="4" />
+            <circle class="point" cx="202" cy="50"  r="4" />
+          </g>
         </svg>
       </div>
 
