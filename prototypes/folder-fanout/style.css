@@ -38,13 +38,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 44px;
-}
-
-.hint {
-  font-size: 13px;
-  color: #8a8a8e;
-  margin: 0;
 }
 
 /* Reserves the scaled footprint plus headroom for the fan so the surrounding
