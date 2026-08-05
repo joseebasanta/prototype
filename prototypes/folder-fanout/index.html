@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Folder fan-out — hover to reveal cards</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stage">
+    <!--
+      Hover / focus / tap the folder to fan the three token cards out of it.
+      Structure mirrors the Figma layering:
+        folder-back  (rounded panel)  →  cards  →  folder-front (pocket + tab)
+      The cards live between the two folder layers, so the front pocket masks
+      their lower half. Motion is transform-only (translate + rotate) for
+      GPU-smooth, springy easing that reverses cleanly on mouse-leave.
+    -->
+    <div class="folder-scale">
+      <div
+        class="folder"
+        tabindex="0"
+        role="button"
+        aria-label="Folder — hover to fan the cards out"
+      >
+        <img class="folder-back" src="assets/folder-back.svg" alt="" aria-hidden="true" />
+
+        <div class="cards" aria-hidden="true">
+          <img class="card card--left"  src="assets/card-pound.svg" alt="" />
+          <img class="card card--right" src="assets/card-usdt.svg"  alt="" />
+          <img class="card card--mid"   src="assets/card-usdc.svg"  alt="" />
+        </div>
+
+        <img class="folder-front" src="assets/folder-front.svg" alt="" aria-hidden="true" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Touch devices have no :hover — toggle an explicit open state on tap.
+    const folder = document.querySelector(".folder");
+    folder.addEventListener("click", () => folder.classList.toggle("is-open"));
+  </script>
+</body>
+</html>
