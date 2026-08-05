@@ -9,10 +9,12 @@
 <body>
   <div class="stage">
     <!--
-      Hover / focus / tap the folder to fan the three cards out of it.
-      Rest state: cards are tucked fully behind the folder's front pocket (hidden).
-      Hover state: the container expands and the cards rise + fan out.
-      Motion is transform-only (translate + rotate) so it stays GPU-smooth.
+      Hover / focus / tap the folder to fan the three token cards out of it.
+      Structure mirrors the Figma layering:
+        folder-back  (rounded panel)  →  cards  →  folder-front (pocket + tab)
+      The cards live between the two folder layers, so the front pocket masks
+      their lower half. Motion is transform-only (translate + rotate) for
+      GPU-smooth, springy easing that reverses cleanly on mouse-leave.
     -->
     <div class="folder-scale">
       <div
@@ -21,31 +23,15 @@
         role="button"
         aria-label="Folder — hover to fan the cards out"
       >
-        <!-- Folder silhouette: tab + back panel (same dark fill, seams merge) -->
-        <div class="folder-tab" aria-hidden="true"></div>
-        <div class="folder-back" aria-hidden="true"></div>
+        <img class="folder-back" src="assets/folder-back.svg" alt="" aria-hidden="true" />
 
-        <!-- The three cards, tucked between the back panel and the front pocket -->
         <div class="cards" aria-hidden="true">
-          <div class="card card--left">
-            <div class="card-tile card-tile--pound">
-              <span class="glyph">&pound;</span>
-            </div>
-          </div>
-          <div class="card card--right">
-            <div class="card-tile card-tile--tether">
-              <span class="glyph">&#8366;</span>
-            </div>
-          </div>
-          <div class="card card--mid">
-            <div class="card-tile card-tile--dollar">
-              <span class="glyph">$</span>
-            </div>
-          </div>
+          <img class="card card--left"  src="assets/card-pound.svg" alt="" />
+          <img class="card card--right" src="assets/card-usdt.svg"  alt="" />
+          <img class="card card--mid"   src="assets/card-usdc.svg"  alt="" />
         </div>
 
-        <!-- Front pocket: opaque, sits above the cards and masks their tucked bottoms -->
-        <div class="folder-front" aria-hidden="true"></div>
+        <img class="folder-front" src="assets/folder-front.svg" alt="" aria-hidden="true" />
       </div>
     </div>
 
