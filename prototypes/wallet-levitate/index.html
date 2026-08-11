@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wallet levitate — hover to pop cards & burst icons</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stage">
+    <!--
+      Hover / focus / tap the wallet to trigger the micro-interaction:
+        • Card Pop      — inner cards slide up and fan so all colors show.
+        • Icon Burst    — crypto badges scale 0→1, fade in, and fan into an
+                          arch above the wallet.
+        • Levitation    — once settled, the badges bob gently forever.
+
+      Layering mirrors the Figma stack (back → cards → front pocket → icons).
+      Every asset is a standalone SVG under assets/ — swap any file to reskin.
+      Motion is transform-only for GPU-smooth, springy easing that reverses
+      cleanly on mouse-leave.
+    -->
+    <div class="wallet-scale">
+      <div
+        class="wallet"
+        tabindex="0"
+        role="button"
+        aria-label="Wallet — hover to reveal cards and crypto"
+      >
+        <img class="wallet-back" src="assets/wallet-back.svg" alt="" aria-hidden="true" />
+
+        <div class="cards" aria-hidden="true">
+          <img class="card card--blue"   src="assets/card-blue.svg"   alt="" />
+          <img class="card card--green"  src="assets/card-green.svg"  alt="" />
+          <img class="card card--yellow" src="assets/card-yellow.svg" alt="" />
+        </div>
+
+        <img class="wallet-front" src="assets/wallet-front.svg" alt="" aria-hidden="true" />
+
+        <div class="balance" aria-hidden="true">
+          <div class="balance__amount">$420.00</div>
+          <div class="balance__label">Total Balance</div>
+        </div>
+
+        <div class="icons" aria-hidden="true">
+          <div class="icon icon--usdt"><div class="icon__inner"><img src="assets/icon-usdt.svg" alt="" /></div></div>
+          <div class="icon icon--dai"><div class="icon__inner"><img src="assets/icon-dai.svg" alt="" /></div></div>
+          <div class="icon icon--usdc"><div class="icon__inner"><img src="assets/icon-usdc.svg" alt="" /></div></div>
+          <div class="icon icon--deel"><div class="icon__inner"><img src="assets/icon-deel.svg" alt="" /></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Touch devices have no :hover — toggle an explicit open state on tap.
+    const wallet = document.querySelector(".wallet");
+    wallet.addEventListener("click", () => wallet.classList.toggle("is-open"));
+  </script>
+</body>
+</html>
