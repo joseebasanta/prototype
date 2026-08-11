@@ -1,0 +1,5 @@
+# Pre-bundled / generated build outputs — collapse them in diffs and exclude
+# them from language statistics so reviews focus on the hand-written source.
+# Canonical sources live alongside these files (app.js, style.css, assets/).
+prototypes/wallet-hover/vendor.js            linguist-generated=true
+prototypes/wallet-hover/preview.artifact.html linguist-generated=true
