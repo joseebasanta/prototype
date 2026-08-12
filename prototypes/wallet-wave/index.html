@@ -3,29 +3,24 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Wallet wave — hover to ripple the cards</title>
+<title>Wallet wave — soft, always-on card ripple</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="stage">
     <!--
-      Hover / focus / tap the wallet to ripple the three inner cards in a
-      continuous, bouncy wave: blue rises first, then green, then yellow, and
-      the wave loops for as long as the hover is held.
+      The three inner cards drift in a soft, continuous wave — blue first,
+      then green, then yellow — running on its own, no interaction required.
 
       Layering mirrors the Figma stack (back → cards → front pocket). Each card
       is wrapped in an inner element: the outer .card holds the static stacking
       offset, the inner .card__inner runs the looping wave keyframe, so the two
-      transforms never conflict and the motion eases back cleanly on leave.
-      Every asset is a standalone SVG under assets/ — swap any file to reskin.
+      transforms never collide. Amplitude, speed, and stagger are tunable via
+      the --wave-* custom properties in style.css. Every asset is a standalone
+      SVG under assets/ — swap any file to reskin.
     -->
     <div class="wallet-scale">
-      <div
-        class="wallet"
-        tabindex="0"
-        role="button"
-        aria-label="Wallet — hover to ripple the cards in a wave"
-      >
+      <div class="wallet" role="img" aria-label="Digital wallet with three cards rippling in a soft wave">
         <img class="wallet-back" src="assets/wallet-back.svg" alt="" aria-hidden="true" />
 
         <div class="cards" aria-hidden="true">
@@ -43,11 +38,5 @@
       </div>
     </div>
   </div>
-
-  <script>
-    // Touch devices have no :hover — toggle an explicit open state on tap.
-    const wallet = document.querySelector(".wallet");
-    wallet.addEventListener("click", () => wallet.classList.toggle("is-open"));
-  </script>
 </body>
 </html>

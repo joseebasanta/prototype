@@ -9,15 +9,12 @@
   /* — Display scale (viewing only — keeps internal coords faithful to Figma) — */
   --scale: 1.5;
 
-  /* — Motion — */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* calm settle */
-  --dur: 520ms;
-
-  /* Wave: one card's rise-and-settle, looped; staggered across the deck so the
-     lift travels blue → green → yellow like a wave. */
-  --wave-dur: 1.35s;
+  /* Soft, always-on wave: a small, slow up-and-down drift, staggered across
+     the deck so the motion travels blue → green → yellow. */
+  --wave-dur: 2.8s;
   --wave-ease: ease-in-out;
-  --wave-step: 260ms; /* delay between each card */
+  --wave-step: 340ms; /* phase offset between each card */
+  --wave-amp: 6px;    /* how far each card drifts up */
 }
 
 * {
@@ -47,29 +44,21 @@ body {
 }
 
 .wallet-scale {
-  width: calc((var(--wallet-w) + 60px) * var(--scale));
-  height: calc((var(--wallet-h) + 70px) * var(--scale));
+  width: calc((var(--wallet-w) + 40px) * var(--scale));
+  height: calc((var(--wallet-h) + 50px) * var(--scale));
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
 
-/* ---------- wallet (hover target) ---------- */
+/* ---------- wallet ---------- */
 
 .wallet {
   position: relative;
   width: var(--wallet-w);
   height: var(--wallet-h);
-  cursor: pointer;
-  outline: none;
   transform: scale(var(--scale));
   transform-origin: bottom center;
-}
-
-.wallet:focus-visible {
-  outline: 2px solid #335cff;
-  outline-offset: 12px;
-  border-radius: 26px;
 }
 
 .wallet-back,
@@ -94,13 +83,6 @@ body {
   height: var(--front-h);
   z-index: 3;
   filter: drop-shadow(0 20px 30px rgba(15, 16, 22, 0.32));
-  transition: filter var(--dur) var(--ease-out);
-}
-
-.wallet:hover .wallet-front,
-.wallet:focus-visible .wallet-front,
-.wallet.is-open .wallet-front {
-  filter: drop-shadow(0 28px 40px rgba(15, 16, 22, 0.42));
 }
 
 /* ---------- balance text overlay (static, sits on the pocket) ---------- */
@@ -126,7 +108,7 @@ body {
   color: rgba(255, 255, 255, 0.55);
 }
 
-/* ---------- inner cards (the wave) ---------- */
+/* ---------- inner cards (the soft, always-on wave) ---------- */
 
 .cards {
   position: absolute;
@@ -159,47 +141,22 @@ body {
 
 .card__inner {
   display: block;
-  transition: transform 320ms var(--ease-out); /* eases back when hover ends */
   will-change: transform;
-}
-
-/* A single card's rise: quick lift, then a bouncy settle back to rest */
-@keyframes cardWave {
-  0%   { transform: translateY(0); }
-  22%  { transform: translateY(-26px); }
-  42%  { transform: translateY(-6px); }
-  58%  { transform: translateY(-15px); }
-  74%  { transform: translateY(-2px); }
-  100% { transform: translateY(0); }
-}
-
-.wallet:hover .card__inner,
-.wallet:focus-visible .card__inner,
-.wallet.is-open .card__inner {
+  /* Runs continuously; each card is phase-offset so the drift travels. */
   animation: cardWave var(--wave-dur) var(--wave-ease) infinite;
 }
+.card--blue   .card__inner { animation-delay: 0ms; }
+.card--green  .card__inner { animation-delay: var(--wave-step); }
+.card--yellow .card__inner { animation-delay: calc(var(--wave-step) * 2); }
 
-/* Stagger the loop so the lift travels blue → green → yellow, then repeats */
-.wallet:hover .card--blue .card__inner,
-.wallet:focus-visible .card--blue .card__inner,
-.wallet.is-open .card--blue .card__inner { animation-delay: 0ms; }
-.wallet:hover .card--green .card__inner,
-.wallet:focus-visible .card--green .card__inner,
-.wallet.is-open .card--green .card__inner { animation-delay: var(--wave-step); }
-.wallet:hover .card--yellow .card__inner,
-.wallet:focus-visible .card--yellow .card__inner,
-.wallet.is-open .card--yellow .card__inner { animation-delay: calc(var(--wave-step) * 2); }
+/* A gentle up-and-back drift — soft, small, no overshoot */
+@keyframes cardWave {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(var(--wave-amp) * -1)); }
+}
 
 /* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .wallet-front,
-  .card__inner {
-    transition-duration: 1ms;
-  }
-  .wallet:hover .card__inner,
-  .wallet:focus-visible .card__inner,
-  .wallet.is-open .card__inner {
-    animation: none;
-  }
+  .card__inner { animation: none; }
 }
