@@ -28,8 +28,22 @@ import { BalanceTicker } from "@/components/BalanceTicker";
 | `currency`    | `string`  | `"$"`   | Leading symbol, rendered static.                                   |
 | `separator`   | `string`  | `"."`   | Decimal separator, rendered static.                                |
 | `startOnView` | `boolean` | `true`  | Start when scrolled into view; `false` starts immediately on mount. |
+| `live`        | `boolean` | `false` | Start at `balance` and rise continuously forever (no target).       |
+| `rate`        | `number`  | `0.2`   | Units per second while `live`.                                      |
 
 Plus any `React.HTMLAttributes<HTMLSpanElement>` (`className`, `style`, `id`, …).
+
+### Live mode
+
+Instead of counting up to a target once, `live` makes the value start at `balance` and rise
+continuously — soft and smooth via a per-frame `useAnimationFrame` increment:
+
+```tsx
+<BalanceTicker balance={420} live rate={0.2} className="text-white" />
+```
+
+At the default `rate` of `0.2`/s it stays a 3-digit `$4xx` for ~48 min before it would reach
+`$1000` and widen the integer slot by one digit.
 
 ### How the "no shift" works
 

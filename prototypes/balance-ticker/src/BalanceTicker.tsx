@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   animate,
   motion,
+  useAnimationFrame,
   useInView,
   useMotionValue,
   useReducedMotion,
@@ -23,6 +24,13 @@ export interface BalanceTickerProps
   separator?: string;
   /** Start when scrolled into view (default) instead of immediately on mount. */
   startOnView?: boolean;
+  /**
+   * Live mode: start at `balance` and rise continuously forever instead of
+   * animating up to a target once. Soft and smooth (per-frame increment).
+   */
+  live?: boolean;
+  /** Units per second while `live`. */
+  rate?: number;
 }
 
 /**
@@ -43,12 +51,15 @@ export const BalanceTicker = React.forwardRef<HTMLSpanElement, BalanceTickerProp
       currency = "$",
       separator = ".",
       startOnView = true,
+      live = false,
+      rate = 0.2,
       className,
       ...props
     },
     ref,
   ) => {
-    const count = useMotionValue(0);
+    // Live mode starts at `balance`; one-shot mode starts at 0 and animates up.
+    const count = useMotionValue(live ? balance : 0);
     const prefersReduced = useReducedMotion();
 
     const localRef = React.useRef<HTMLSpanElement>(null);
@@ -64,7 +75,17 @@ export const BalanceTicker = React.forwardRef<HTMLSpanElement, BalanceTickerProp
     const intText = useTransform(count, (v) => format(v)[0]);
     const decText = useTransform(count, (v) => format(v)[1] ?? "");
 
+    // Live mode: rise continuously by `rate` per second. A per-frame increment
+    // keeps the motion smooth rather than stepped; the soft feel comes from the
+    // small rate. Holds static under reduced-motion.
+    useAnimationFrame((_, delta) => {
+      if (!live || prefersReduced) return;
+      count.set(count.get() + (rate * delta) / 1000);
+    });
+
+    // One-shot mode: count 0 → balance once with an easeOut deceleration.
     React.useEffect(() => {
+      if (live) return;
       if (startOnView && !inView) return;
       if (prefersReduced) {
         count.set(balance);
@@ -72,7 +93,7 @@ export const BalanceTicker = React.forwardRef<HTMLSpanElement, BalanceTickerProp
       }
       const controls = animate(count, balance, { duration, ease: "easeOut" });
       return () => controls.stop();
-    }, [balance, duration, inView, startOnView, prefersReduced, count]);
+    }, [live, balance, duration, inView, startOnView, prefersReduced, count]);
 
     // Fixed-width slots (in ch, under tabular-nums) keep the symbol + separator
     // pinned while the digits fill in from the right.
