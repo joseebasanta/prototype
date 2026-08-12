@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wallet wave — soft, always-on card ripple</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stage">
+    <!--
+      The three inner cards drift in a soft, continuous wave — blue first,
+      then green, then yellow — running on its own, no interaction required.
+
+      Layering mirrors the Figma stack (back → cards → front pocket). Each card
+      is wrapped in an inner element: the outer .card holds the static stacking
+      offset, the inner .card__inner runs the looping wave keyframe, so the two
+      transforms never collide. Amplitude, speed, and stagger are tunable via
+      the --wave-* custom properties in style.css. Every asset is a standalone
+      SVG under assets/ — swap any file to reskin.
+    -->
+    <div class="wallet-scale">
+      <div class="wallet" role="img" aria-label="Digital wallet with three cards rippling in a soft wave">
+        <img class="wallet-back" src="assets/wallet-back.svg" alt="" aria-hidden="true" />
+
+        <div class="cards" aria-hidden="true">
+          <div class="card card--blue"><div class="card__inner"><img src="assets/card-blue.svg" alt="" /></div></div>
+          <div class="card card--green"><div class="card__inner"><img src="assets/card-green.svg" alt="" /></div></div>
+          <div class="card card--yellow"><div class="card__inner"><img src="assets/card-yellow.svg" alt="" /></div></div>
+        </div>
+
+        <img class="wallet-front" src="assets/wallet-front.svg" alt="" aria-hidden="true" />
+
+        <div class="balance" aria-hidden="true">
+          <div class="balance__amount">$420.00</div>
+          <div class="balance__label">Total Balance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

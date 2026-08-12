@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #e8eaef;
+  --bg-2: #eef0f4;
+  --panel: #ffffff;
+  --text: #14161c;
+  --muted: #656b78;
+  --border: #d6dae2;
+  --accent: #335cff;
+
+  /* Soft, always-on card wave (ported from the wallet-wave prototype) */
+  --wave-dur: 2.8s;
+  --wave-ease: ease-in-out;
+  --wave-step: 340ms;
+  --wave-amp: 6px;
+
+  /* Wallet artwork native sizes */
+  --wallet-w: 200px;
+  --wallet-h: 126px;
+  --front-h: 92px;
+  --card-w: 192px;
+  --card-h: 85px;
+  --scale: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0e12;
+    --bg-2: #101218;
+    --panel: #17181d;
+    --text: #f2f3f7;
+    --muted: #949aa6;
+    --border: #24262e;
+    --accent: #6d8bff;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0e12;
+  --bg-2: #101218;
+  --panel: #17181d;
+  --text: #f2f3f7;
+  --muted: #949aa6;
+  --border: #24262e;
+  --accent: #6d8bff;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: radial-gradient(120% 90% at 50% 8%, var(--bg-2), var(--bg) 70%);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 24px;
+}
+
+/* ---------- wallet ---------- */
+
+.wallet-scale {
+  width: calc((var(--wallet-w) + 40px) * var(--scale));
+  height: calc((var(--wallet-h) + 40px) * var(--scale));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wallet {
+  position: relative;
+  width: var(--wallet-w);
+  height: var(--wallet-h);
+  transform: scale(var(--scale));
+  transform-origin: center;
+}
+.wallet-layer {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+.wallet-back {
+  top: 0;
+  height: 100%;
+  z-index: 1;
+}
+.wallet-back svg,
+.wallet-front svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.wallet-front {
+  bottom: 0;
+  height: var(--front-h);
+  z-index: 3;
+  filter: drop-shadow(0 20px 30px rgba(15, 16, 22, 0.32));
+}
+
+/* balance overlay */
+.balance {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 4;
+  color: #ffffff;
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Arial, sans-serif;
+}
+.balance__amount {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #ffffff;
+}
+.balance__label {
+  margin-top: 0;
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- inner cards (soft, always-on wave) ---------- */
+
+.cards {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.card {
+  position: absolute;
+  left: calc((var(--wallet-w) - var(--card-w)) / 2);
+  top: 20px;
+  width: var(--card-w);
+  height: var(--card-h);
+}
+.card svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.card--yellow {
+  z-index: 1;
+  transform: translateY(-14px);
+}
+.card--green {
+  z-index: 2;
+  transform: translateY(-7px);
+}
+.card--blue {
+  z-index: 3;
+  transform: translateY(0);
+}
+.card__inner {
+  display: block;
+  will-change: transform;
+  animation: cardWave var(--wave-dur) var(--wave-ease) infinite;
+}
+.card--blue .card__inner {
+  animation-delay: 0ms;
+}
+.card--green .card__inner {
+  animation-delay: var(--wave-step);
+}
+.card--yellow .card__inner {
+  animation-delay: calc(var(--wave-step) * 2);
+}
+@keyframes cardWave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(var(--wave-amp) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card__inner {
+    animation: none;
+  }
+}
