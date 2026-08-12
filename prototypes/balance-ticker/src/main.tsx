@@ -6,15 +6,6 @@ import { WalletCard } from "./WalletCard";
 function App() {
   return (
     <div className="page">
-      <header className="page__head">
-        <p className="eyebrow">Micro-interaction · Prototype</p>
-        <h1>Balance ticker</h1>
-        <p className="hint">
-          The total balance ticks upward continuously — soft and steady, like the card wave. The{" "}
-          <b>$</b> and <b>.</b> stay fixed; only the digits move.
-        </p>
-      </header>
-
       <WalletCard balance={420} live />
     </div>
   );
