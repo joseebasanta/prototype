@@ -1,0 +1,152 @@
+/* =========================================================================
+   Wallet hover — styles
+   Layout is driven by a fixed-size .scene coordinate box. Framer Motion owns
+   all transforms (x / y / scale / rotate); CSS only sets the RESTING anchor
+   position of each layer. Swap any artwork by replacing the file in assets/.
+   ========================================================================= */
+
+:root {
+  /* — Artwork native sizes (Figma export) — */
+  --wallet-w: 200px;
+  --wallet-h: 126px;   /* back panel height */
+  --front-h: 92px;     /* front pocket height */
+
+  /* — Scene box: wallet sits at the bottom, headroom above for the arch — */
+  --scene-w: 260px;
+  --scene-h: 280px;
+
+  /* — Display scale (view-only zoom; internal coords stay Figma-faithful) — */
+  --scale: 1.5;
+
+  /* — Palette — */
+  --bg: #e9ebee;
+  --text-on-wallet: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.55);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- scene (coordinate box) ---------- */
+
+.scene {
+  position: relative;
+  width: var(--scene-w);
+  height: var(--scene-h);
+  transform: scale(var(--scale));
+  transform-origin: center;
+}
+
+/* ---------- wallet (interactive target) ---------- */
+
+.wallet {
+  position: absolute;
+  left: calc((var(--scene-w) - var(--wallet-w)) / 2);   /* centred in scene */
+  bottom: 0;
+  width: var(--wallet-w);
+  height: var(--wallet-h);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 18px 26px rgba(15, 16, 22, 0.28));
+}
+
+.wallet:focus-visible {
+  outline: 2px solid #335cff;
+  outline-offset: 8px;
+  border-radius: 20px;
+}
+
+.wallet-back,
+.wallet-front {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wallet-back  { top: 0; height: var(--wallet-h); z-index: 1; }
+.wallet-front { bottom: 0; height: var(--front-h); z-index: 5; }
+
+/* ---------- inner cards ---------- */
+
+.cards {
+  position: absolute;
+  inset: 0;
+  z-index: 2;                 /* between back panel and front pocket */
+  pointer-events: none;
+}
+
+.card {
+  position: absolute;
+  left: 4px;                  /* (200 - 192) / 2 — horizontally centred */
+  width: 192px;
+  height: auto;
+  display: block;
+  transform-origin: 50% 100%; /* pivot at bottom-centre → clean fan */
+  will-change: transform;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22));
+}
+
+/* Resting stack: three thin colour bands peek above the front pocket.
+   Higher z-index sits nearer the viewer / lower in the stack. */
+.card--yellow { top: 12px; z-index: 1; }
+.card--green  { top: 19px; z-index: 2; }
+.card--blue   { top: 26px; z-index: 3; }
+
+/* ---------- balance text (printed on the front pocket) ---------- */
+
+.balance {
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  z-index: 6;
+  pointer-events: none;
+  color: var(--text-on-wallet);
+  line-height: 1.1;
+}
+.balance__amount {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.balance__label {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ---------- crypto icons ---------- */
+
+.icon-anchor {
+  position: absolute;         /* left/top set inline = resting anchor */
+  z-index: 10;                /* float above the wallet during the burst */
+  pointer-events: none;       /* never steal hover from the wallet */
+  will-change: transform, opacity;
+}
+.icon-bob {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.icon-bob img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 10px rgba(15, 16, 22, 0.22));
+}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wallet hover — spring burst + levitation</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!--
+    Hover / focus / tap the wallet:
+      • the inner cards pop up and fan out (spring)
+      • the crypto tokens burst into an arch above (spring), then levitate
+    Structure mirrors the Figma layering:
+      wallet-back → cards → wallet-front → balance text, with the tokens
+      floating on top. Animation lives in app.js; artwork in assets/.
+  -->
+  <div id="root"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
