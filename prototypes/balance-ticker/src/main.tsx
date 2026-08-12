@@ -6,7 +6,7 @@ import { WalletCard } from "./WalletCard";
 function App() {
   return (
     <div className="page">
-      <WalletCard balance={420} live />
+      <WalletCard balance={420} live rate={0.05} />
     </div>
   );
 }
