@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spend request — dropdown to container</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!--
+    Dropdown interaction: state 1 "Spend request" (collapsed pill)
+    expands into the "Container" (full spending-request list).
+
+    One card morphs between the two states via data-state:
+      collapsed → the avatar-group pill + summary line
+      expanded  → the "Spending Request" title + divider + list
+    The header cross-fades in place, the chevron flips, and the body
+    grows from 0fr→1fr (auto height) while the rows stagger in.
+    Click the pill or the chevron to expand; chevron again to collapse;
+    the ✕ dismisses (a Reopen chip brings it back so the flow is testable).
+  -->
+  <div class="stage">
+    <div class="dropdown" data-state="collapsed" role="region" aria-label="Spend request">
+
+      <!-- ===== Header ===== -->
+      <div class="dd-head">
+        <div class="dd-head__views">
+          <!-- Collapsed pill view (also the primary expand target) -->
+          <button
+            type="button"
+            class="dd-collapsed js-expand"
+            aria-controls="dd-body"
+            aria-expanded="false"
+          >
+            <span class="avatars" aria-hidden="true">
+              <span class="avatar avatar--slate"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="avatar avatar--yellow"><img src="assets/avatar-2.svg" alt="" /></span>
+              <span class="avatar avatar--more">+3</span>
+            </span>
+            <span class="dd-summary">
+              <span class="strong">@louissur </span><span class="muted">and </span><span class="strong">4 others </span><span class="muted">request spending</span>
+            </span>
+          </button>
+
+          <!-- Expanded title view -->
+          <h2 class="dd-title">Spending Request</h2>
+        </div>
+
+        <!-- Shared controls -->
+        <div class="dd-controls">
+          <button type="button" class="icon-btn icon-btn--chevron js-toggle"
+                  aria-controls="dd-body" aria-expanded="false" aria-label="Expand spending requests">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9.5 L12 15.5 L18 9.5" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn js-close" aria-label="Dismiss spending requests">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6.5 6.5 L17.5 17.5 M17.5 6.5 L6.5 17.5" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== Body (expanding list) ===== -->
+      <div class="dd-body" id="dd-body">
+        <div class="dd-body__inner">
+          <hr class="divider" />
+          <ul class="req-list">
+            <li class="req">
+              <span class="avatar avatar--lg avatar--slate" aria-hidden="true"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="req__text">
+                <span class="req__amount">$1200.00</span>
+                <span class="req__meta">Chris Griffen · Marketing</span>
+              </span>
+              <span class="req__actions">
+                <button type="button" class="tag tag--approve">Approve</button>
+                <button type="button" class="tag tag--reject">Reject</button>
+              </span>
+            </li>
+            <li class="req">
+              <span class="avatar avatar--lg avatar--slate" aria-hidden="true"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="req__text">
+                <span class="req__amount">$1200.00</span>
+                <span class="req__meta">Chris Griffen · Marketing</span>
+              </span>
+              <span class="req__actions">
+                <button type="button" class="tag tag--approve">Approve</button>
+                <button type="button" class="tag tag--reject">Reject</button>
+              </span>
+            </li>
+            <li class="req">
+              <span class="avatar avatar--lg avatar--slate" aria-hidden="true"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="req__text">
+                <span class="req__amount">$1200.00</span>
+                <span class="req__meta">Chris Griffen · Marketing</span>
+              </span>
+              <span class="req__actions">
+                <button type="button" class="tag tag--approve">Approve</button>
+                <button type="button" class="tag tag--reject">Reject</button>
+              </span>
+            </li>
+            <li class="req">
+              <span class="avatar avatar--lg avatar--slate" aria-hidden="true"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="req__text">
+                <span class="req__amount">$1200.00</span>
+                <span class="req__meta">Chris Griffen · Marketing</span>
+              </span>
+              <span class="req__actions">
+                <button type="button" class="tag tag--approve">Approve</button>
+                <button type="button" class="tag tag--reject">Reject</button>
+              </span>
+            </li>
+            <li class="req">
+              <span class="avatar avatar--lg avatar--slate" aria-hidden="true"><img src="assets/avatar-persona.svg" alt="" /></span>
+              <span class="req__text">
+                <span class="req__amount">$1200.00</span>
+                <span class="req__meta">Chris Griffen · Marketing</span>
+              </span>
+              <span class="req__actions">
+                <button type="button" class="tag tag--approve">Approve</button>
+                <button type="button" class="tag tag--reject">Reject</button>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brought back after dismiss so the interaction stays testable -->
+    <button type="button" class="reopen js-reopen">Reopen spend request</button>
+  </div>
+
+  <script>
+    // ---- refs ----
+    const dropdown = document.querySelector(".dropdown");
+    const toggleBtn = document.querySelector(".js-toggle");
+    const expandBtn = document.querySelector(".js-expand");
+    const closeBtn  = document.querySelector(".js-close");
+    const reopenBtn = document.querySelector(".js-reopen");
+
+    // ---- state helpers ----
+    function setState(state) {
+      dropdown.dataset.state = state;
+      const expanded = state === "expanded";
+      toggleBtn.setAttribute("aria-expanded", String(expanded));
+      expandBtn.setAttribute("aria-expanded", String(expanded));
+      toggleBtn.setAttribute(
+        "aria-label",
+        expanded ? "Collapse spending requests" : "Expand spending requests"
+      );
+      reopenBtn.classList.toggle("is-visible", state === "closed");
+    }
+
+    // ---- interactions ----
+    // Toggle: chevron expands or collapses.
+    toggleBtn.addEventListener("click", () => {
+      setState(dropdown.dataset.state === "expanded" ? "collapsed" : "expanded");
+    });
+    // Clicking the collapsed pill body opens it.
+    expandBtn.addEventListener("click", () => setState("expanded"));
+    // Dismiss the whole card.
+    closeBtn.addEventListener("click", () => setState("closed"));
+    // Reopen chip restores the collapsed pill.
+    reopenBtn.addEventListener("click", () => setState("collapsed"));
+
+    // Approve / Reject give per-row feedback (prototype nicety).
+    document.querySelectorAll(".req").forEach((row) => {
+      row.querySelectorAll(".tag").forEach((tag) => {
+        tag.addEventListener("click", () => {
+          const approved = tag.classList.contains("tag--approve");
+          row.classList.add("is-resolved");
+          const actions = row.querySelector(".req__actions");
+          actions.innerHTML =
+            '<span class="req__status req__status--' +
+            (approved ? "approved" : "rejected") +
+            '">' + (approved ? "Approved" : "Rejected") + "</span>";
+        });
+      });
+    });
+  </script>
+</body>
+</html>
