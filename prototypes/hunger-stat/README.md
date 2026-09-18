@@ -7,11 +7,10 @@ Sans** for the copy (both via Google Fonts).
 1. **Odometer** — the number `200` rolls up, slot-machine style: each digit is a masked
    `overflow-hidden` cell holding a `0–9` column that springs to its target
    (`type: "spring", damping: 20, stiffness: 100`), with a slight stagger per column.
-2. **Subtext** — `million people` (green) fades in and slides up ~1.5s after the roll starts.
-3. **Hand-off** — at ~3s the whole `200 / million people` group slides up and fades out while,
+2. **Subtext** — `BUILDERS` (green, bold, all-caps) fades in and slides up ~1.5s after the roll.
+3. **Hand-off** — at ~3s the whole `200 / BUILDERS` group slides up and fades out while,
    simultaneously, the final line enters from below.
-4. **Final message** — `are going hungry.` (`are going` white, `hungry.` green) slides up into
-   place exactly as the first group exits.
+4. **Final message** — `Únetenos` (green) slides up into place exactly as the first group exits.
 
 `AnimatePresence` handles the mount/unmount of the two states; a single `step` state
 (`1 → 2`, flipped by a `useEffect` timeout) drives the swap.
@@ -27,9 +26,9 @@ passthrough via `cn()`, spreads native `<div>` props). Copy `src/StatReveal.tsx`
 ```tsx
 import { StatReveal } from "@/components/StatReveal";
 
-<StatReveal />                       // one-shot: 200 → "are going hungry."
+<StatReveal />                       // one-shot: 200 BUILDERS → "Únetenos"
 <StatReveal loop />                  // replay forever (used by the preview)
-<StatReveal count="795" unit="Builders" finalLead="Forma " finalEmph="parte" />
+<StatReveal count="795" unit="million people" finalLead="are going " finalEmph="hungry." />
 ```
 
 ### Props
@@ -37,9 +36,9 @@ import { StatReveal } from "@/components/StatReveal";
 | Prop            | Type      | Default            | Description                                                    |
 | --------------- | --------- | ------------------ | -------------------------------------------------------------- |
 | `count`         | `string`  | `"200"`            | Number the odometer rolls up to. Digits roll; other chars static. |
-| `unit`          | `string`  | `"million people"` | Green emphasis line under the number (Phase 1).                |
-| `finalLead`     | `string`  | `"are going "`     | White lead-in of the final message.                           |
-| `finalEmph`     | `string`  | `"hungry."`        | Green word that closes the final message.                     |
+| `unit`          | `string`  | `"BUILDERS"`       | Green, bold, all-caps line under the number (Phase 1).         |
+| `finalLead`     | `string`  | `""`               | White lead-in of the final message.                           |
+| `finalEmph`     | `string`  | `"Únetenos"`       | Green word that closes the final message.                     |
 | `digitStagger`  | `number`  | `0.12`             | Seconds each digit column lags behind the previous.           |
 | `subtextDelay`  | `number`  | `1.5`              | Seconds after roll start before the subtext appears.          |
 | `phaseSwitchMs` | `number`  | `3000`             | Milliseconds Phase 1 holds before it exits and Phase 2 enters. |

@@ -21,12 +21,12 @@ const DIGIT_SPRING: Transition = {
 const DEFAULTS = {
   /** The number that rolls up on the odometer. */
   count: "200",
-  /** Green emphasis line under the number in Phase 1. */
-  unit: "million people",
-  /** White lead-in of the final message. */
-  finalLead: "are going ",
+  /** Green emphasis line under the number in Phase 1 (rendered all-caps). */
+  unit: "BUILDERS",
+  /** White lead-in of the final message (empty here — the CTA stands alone). */
+  finalLead: "",
   /** Green emphasis word that closes the final message. */
-  finalEmph: "hungry.",
+  finalEmph: "Únetenos",
 
   /** Seconds each successive digit column lags behind the previous one. */
   digitStagger: 0.12,
@@ -204,7 +204,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
             >
               <Odometer value={count} stagger={digitStagger} reduced={reduced} />
               <motion.p
-                className="text-2xl font-semibold text-green-400 sm:text-3xl"
+                className="text-2xl font-bold uppercase tracking-wide text-green-400 sm:text-3xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
