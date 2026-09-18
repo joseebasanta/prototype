@@ -20,7 +20,7 @@ const DIGIT_SPRING: Transition = {
 
 const DEFAULTS = {
   /** The number that rolls up on the odometer. */
-  count: "795",
+  count: "200",
   /** Green emphasis line under the number in Phase 1. */
   unit: "million people",
   /** White lead-in of the final message. */
@@ -86,7 +86,7 @@ function OdometerDigit({
           <span
             key={n}
             className="flex items-center justify-center leading-none"
-            style={{ height: DIGIT_H, width: "0.62em" }}
+            style={{ height: DIGIT_H, width: "0.72em" }}
           >
             {n}
           </span>
@@ -108,8 +108,14 @@ function Odometer({
   const digits = value.split("");
   return (
     <div
-      className="flex justify-center font-extrabold tracking-tight text-white"
-      style={{ fontSize: DIGIT_H * 0.9, lineHeight: 1 }}
+      className="flex justify-center tracking-tight text-white"
+      style={{
+        fontSize: DIGIT_H * 0.9,
+        lineHeight: 1,
+        // Doto (black) for the counter; monospace fallback keeps digits aligned.
+        fontFamily: '"Doto", ui-monospace, "SFMono-Regular", monospace',
+        fontWeight: 900,
+      }}
     >
       {/* Real value for assistive tech; the rolling columns are decorative. */}
       <span className="sr-only">{value}</span>
@@ -225,7 +231,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
                   : { duration: 0.7, ease: "easeOut" }
               }
             >
-              <p className="max-w-[16ch] text-5xl font-extrabold leading-tight tracking-tight sm:text-6xl md:max-w-none">
+              <p className="max-w-[16ch] text-5xl font-bold leading-tight tracking-tight sm:text-6xl md:max-w-none">
                 <span className="text-white">{finalLead}</span>
                 <span className="text-green-400">{finalEmph}</span>
               </p>
