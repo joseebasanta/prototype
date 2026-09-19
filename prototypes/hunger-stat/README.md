@@ -14,6 +14,9 @@ Sans** for the copy (both via Google Fonts).
    simultaneously, the final line enters from below.
 4. **Final message** — `Únetenos` slides up into place exactly as the first group exits.
 
+Throughout, a playful **raining-squares** layer (`FallingSquares`) drifts little squares down
+the screen behind the text — randomized sizes, speeds, spins and sideways wobble.
+
 `AnimatePresence` handles the mount/unmount of the two states; a single `step` state
 (`1 → 2`, flipped by a `useEffect` timeout) drives the swap.
 
@@ -47,6 +50,8 @@ import { StatReveal } from "@/components/StatReveal";
 | `phaseSwitchMs` | `number`  | `3000`             | Milliseconds Phase 1 holds before it exits and Phase 2 enters. |
 | `finalHoldMs`   | `number`  | `2600`             | Milliseconds Phase 2 holds before restarting (`loop` only).   |
 | `loop`          | `boolean` | `false`            | Replay from the top forever.                                  |
+| `squares`       | `boolean` | `true`             | Show the playful raining-squares background layer.            |
+| `squareCount`   | `number`  | `18`               | How many squares are raining at once.                        |
 
 Plus any `React.HTMLAttributes<HTMLDivElement>` (`className`, `style`, `id`, …).
 

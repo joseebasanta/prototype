@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { cn } from "./lib/cn";
+import { FallingSquares } from "./FallingSquares";
 
 /* ------------------------------------------------------------------ *
  * Tunable parameters — everything you'd want to nudge lives here.
@@ -36,6 +37,10 @@ const DEFAULTS = {
   finalHoldMs: 2600,
   /** Replay from the top forever (handy for previewing). */
   loop: false,
+  /** Show the playful raining-squares background layer. */
+  squares: true,
+  /** How many squares are raining at once. */
+  squareCount: 18,
 };
 
 /** Height of one digit cell in px; the odometer translates by multiples of it.
@@ -53,6 +58,8 @@ export interface StatRevealProps extends React.HTMLAttributes<HTMLDivElement> {
   phaseSwitchMs?: number;
   finalHoldMs?: number;
   loop?: boolean;
+  squares?: boolean;
+  squareCount?: number;
 }
 
 /* ------------------------------------------------------------------ *
@@ -170,6 +177,8 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
       phaseSwitchMs = DEFAULTS.phaseSwitchMs,
       finalHoldMs = DEFAULTS.finalHoldMs,
       loop = DEFAULTS.loop,
+      squares = DEFAULTS.squares,
+      squareCount = DEFAULTS.squareCount,
       className,
       ...props
     },
@@ -205,13 +214,16 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
         )}
         {...props}
       >
+        {/* Playful ambient layer: little squares raining down behind it all. */}
+        {squares && <FallingSquares count={squareCount} />}
+
         {/* Both phases are absolutely centered so they overlap during the
             hand-off — Phase 2 enters exactly as Phase 1 exits. */}
         <AnimatePresence>
           {step === 1 && (
             <motion.div
               key={`phase1-${cycle}`}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4"
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4"
               initial={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.55, ease: "easeIn" }}
@@ -240,7 +252,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
           {step === 2 && (
             <motion.div
               key="phase2"
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 z-10 flex items-center justify-center"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ opacity: 0 }}
