@@ -5,9 +5,10 @@ A **multi-stage typography reveal** on a near-black (`#000A11`) stage with light
 and styled with **Tailwind CSS**. Type: **Doto** (black) for the rolling number, **IBM Plex
 Sans** for the copy (both via Google Fonts).
 
-1. **Odometer** — the number `200` rolls up, slot-machine style: each digit is a masked
-   `overflow-hidden` cell holding a `0–9` column that springs to its target
-   (`type: "spring", damping: 20, stiffness: 100`), with a slight stagger per column.
+1. **Odometer** — a true rolling counter climbs from `from` (`173`) up to `200`: a single
+   value counts up (easeOut, decelerating into the final number) and every digit wheel is
+   derived from it at its place value, so units/tens/hundreds all spin continuously and
+   settle together — no digit sits still.
 2. **Subtext** — `BUILDERS` (bold, all-caps) fades in and slides up ~1.5s after the roll.
 3. **Hand-off** — at ~3s the whole `200 / BUILDERS` group slides up and fades out while,
    simultaneously, the final line enters from below.
@@ -36,12 +37,13 @@ import { StatReveal } from "@/components/StatReveal";
 
 | Prop            | Type      | Default            | Description                                                    |
 | --------------- | --------- | ------------------ | -------------------------------------------------------------- |
-| `count`         | `string`  | `"200"`            | Number the odometer rolls up to. Digits roll; other chars static. |
+| `count`         | `string`  | `"200"`            | Number the counter climbs to. Digits roll; other chars static. |
+| `from`          | `number`  | `173`              | Number the counter starts from before climbing to `count`.    |
+| `countDuration` | `number`  | `1.8`              | Seconds the count-up takes (decelerates into the final number). |
 | `unit`          | `string`  | `"BUILDERS"`       | Bold, all-caps line under the number (Phase 1).               |
 | `finalLead`     | `string`  | `""`               | Lead-in of the final message.                                |
 | `finalEmph`     | `string`  | `"Únetenos"`       | Word that closes the final message.                          |
-| `digitStagger`  | `number`  | `0.12`             | Seconds each digit column lags behind the previous.           |
-| `subtextDelay`  | `number`  | `1.5`              | Seconds after roll start before the subtext appears.          |
+| `subtextDelay`  | `number`  | `1.5`              | Seconds after count start before the subtext appears.         |
 | `phaseSwitchMs` | `number`  | `3000`             | Milliseconds Phase 1 holds before it exits and Phase 2 enters. |
 | `finalHoldMs`   | `number`  | `2600`             | Milliseconds Phase 2 holds before restarting (`loop` only).   |
 | `loop`          | `boolean` | `false`            | Replay from the top forever.                                  |
@@ -50,12 +52,13 @@ Plus any `React.HTMLAttributes<HTMLDivElement>` (`className`, `style`, `id`, …
 
 ### How the odometer works
 
-Each digit is a fixed-height (`DIGIT_H` px) masked cell. Inside sits a vertical `0–9` column;
-landing on digit `d` is just `animate={{ y: -d * DIGIT_H }}` under the spring. The columns share
-one spring and are offset by `digitStagger` so they settle left-to-right. The real number is
-also rendered `sr-only` for assistive tech, since the rolling columns are decorative.
+A single motion value counts from `from` to `count`. Each digit is a fixed-height (`DIGIT_H` px)
+masked wheel of `0–9`; its vertical offset is derived continuously from that value at its place
+(`(value / place) % 10`), so as the number climbs every wheel spins and they settle together. The
+wheel strip repeats a trailing `0` so the 9→0 wrap rolls seamlessly. The real number is also
+rendered `sr-only` for assistive tech, since the wheels are decorative.
 
-Respects `prefers-reduced-motion` — the roll, the subtext, and the phase swap all snap into place
+Respects `prefers-reduced-motion` — the count, the subtext, and the phase swap all snap into place
 instead of animating.
 
 ## Preview locally

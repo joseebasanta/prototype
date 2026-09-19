@@ -1,9 +1,12 @@
 import * as React from "react";
 import {
   AnimatePresence,
+  animate,
   motion,
+  useMotionValue,
   useReducedMotion,
-  type Transition,
+  useTransform,
+  type MotionValue,
 } from "framer-motion";
 import { cn } from "./lib/cn";
 
@@ -11,26 +14,21 @@ import { cn } from "./lib/cn";
  * Tunable parameters — everything you'd want to nudge lives here.
  * ------------------------------------------------------------------ */
 
-/** Spring used by every odometer digit column (per the brief). */
-const DIGIT_SPRING: Transition = {
-  type: "spring",
-  damping: 20,
-  stiffness: 100,
-};
-
 const DEFAULTS = {
-  /** The number that rolls up on the odometer. */
+  /** The number the odometer counts UP to. */
   count: "200",
-  /** Green emphasis line under the number in Phase 1 (rendered all-caps). */
+  /** Number the counter starts from before climbing to `count`. */
+  from: 173,
+  /** Seconds the count-up takes (decelerates into the final number). */
+  countDuration: 1.8,
+  /** Emphasis line under the number in Phase 1 (rendered all-caps). */
   unit: "BUILDERS",
-  /** White lead-in of the final message (empty here — the CTA stands alone). */
+  /** Lead-in of the final message (empty here — the CTA stands alone). */
   finalLead: "",
-  /** Green emphasis word that closes the final message. */
+  /** Word that closes the final message. */
   finalEmph: "Únetenos",
 
-  /** Seconds each successive digit column lags behind the previous one. */
-  digitStagger: 0.12,
-  /** Seconds after the number starts before "million people" fades in. */
+  /** Seconds after the number starts before the subtext fades in. */
   subtextDelay: 1.5,
   /** Milliseconds Phase 1 is on screen before it exits and Phase 2 enters. */
   phaseSwitchMs: 3000,
@@ -46,10 +44,11 @@ const DIGIT_H = 132;
 
 export interface StatRevealProps extends React.HTMLAttributes<HTMLDivElement> {
   count?: string;
+  from?: number;
+  countDuration?: number;
   unit?: string;
   finalLead?: string;
   finalEmph?: string;
-  digitStagger?: number;
   subtextDelay?: number;
   phaseSwitchMs?: number;
   finalHoldMs?: number;
@@ -57,34 +56,36 @@ export interface StatRevealProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /* ------------------------------------------------------------------ *
- * Odometer: one masked digit that rolls up a 0–9 column and lands on
- * its target value with a spring. Columns are staggered by the caller.
+ * Odometer: a true rolling counter. A single motion value climbs from
+ * `from` to the target; each digit column is derived from that value at
+ * its place (units, tens, hundreds…), so every wheel spins continuously
+ * as the number counts up and they all settle together at the end.
  * ------------------------------------------------------------------ */
 
-function OdometerDigit({
-  value,
-  delay,
-  reduced,
+/** One digit wheel, positioned continuously from the shared count value. */
+function RollingDigit({
+  count,
+  place,
 }: {
-  value: number;
-  delay: number;
-  reduced: boolean | null;
+  count: MotionValue<number>;
+  place: number;
 }) {
+  // Fractional position within a 0–9 wheel for this place value. The strip
+  // repeats a trailing "0" so the 9→0 wrap rolls seamlessly (both are "0").
+  const y = useTransform(count, (v) => {
+    const frac = (((v / place) % 10) + 10) % 10;
+    return -frac * DIGIT_H;
+  });
   return (
     <span
       className="relative block overflow-hidden tabular-nums"
       style={{ height: DIGIT_H }}
       aria-hidden="true"
     >
-      <motion.span
-        className="flex flex-col"
-        initial={{ y: 0 }}
-        animate={{ y: -value * DIGIT_H }}
-        transition={reduced ? { duration: 0 } : { ...DIGIT_SPRING, delay }}
-      >
-        {Array.from({ length: 10 }, (_, n) => (
+      <motion.span className="flex flex-col" style={{ y }}>
+        {[...Array(10).keys(), 0].map((n, idx) => (
           <span
-            key={n}
+            key={idx}
             className="flex items-center justify-center leading-none"
             style={{ height: DIGIT_H, width: "0.72em" }}
           >
@@ -98,14 +99,28 @@ function OdometerDigit({
 
 function Odometer({
   value,
-  stagger,
+  from,
+  duration,
   reduced,
 }: {
   value: string;
-  stagger: number;
+  from: number;
+  duration: number;
   reduced: boolean | null;
 }) {
-  const digits = value.split("");
+  const target = Number(value);
+  const count = useMotionValue(reduced ? target : from);
+
+  React.useEffect(() => {
+    if (reduced) {
+      count.set(target);
+      return;
+    }
+    count.set(from);
+    const controls = animate(count, target, { duration, ease: "easeOut" });
+    return () => controls.stop();
+  }, [count, from, target, duration, reduced]);
+
   return (
     <div
       className="flex justify-center tracking-tight text-[#CEE2FF]"
@@ -117,21 +132,19 @@ function Odometer({
         fontWeight: 900,
       }}
     >
-      {/* Real value for assistive tech; the rolling columns are decorative. */}
+      {/* Real value for assistive tech; the rolling wheels are decorative. */}
       <span className="sr-only">{value}</span>
-      {digits.map((d, i) => {
-        const n = Number(d);
+      {value.split("").map((d, i) => {
         // Non-numeric characters (e.g. a comma) render statically.
-        if (Number.isNaN(n)) {
+        if (Number.isNaN(Number(d))) {
           return (
             <span key={i} aria-hidden="true" className="flex items-center">
               {d}
             </span>
           );
         }
-        return (
-          <OdometerDigit key={i} value={n} delay={i * stagger} reduced={reduced} />
-        );
+        const place = Math.pow(10, value.length - 1 - i);
+        return <RollingDigit key={i} count={count} place={place} />;
       })}
     </div>
   );
@@ -148,10 +161,11 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
   (
     {
       count = DEFAULTS.count,
+      from = DEFAULTS.from,
+      countDuration = DEFAULTS.countDuration,
       unit = DEFAULTS.unit,
       finalLead = DEFAULTS.finalLead,
       finalEmph = DEFAULTS.finalEmph,
-      digitStagger = DEFAULTS.digitStagger,
       subtextDelay = DEFAULTS.subtextDelay,
       phaseSwitchMs = DEFAULTS.phaseSwitchMs,
       finalHoldMs = DEFAULTS.finalHoldMs,
@@ -163,7 +177,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
   ) => {
     const reduced = useReducedMotion();
     const [step, setStep] = React.useState<1 | 2>(1);
-    // Bumping `cycle` remounts Phase 1 so its odometer springs replay on loop.
+    // Bumping `cycle` remounts Phase 1 so its odometer replays the count on loop.
     const [cycle, setCycle] = React.useState(0);
 
     React.useEffect(() => {
@@ -202,7 +216,12 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.55, ease: "easeIn" }}
             >
-              <Odometer value={count} stagger={digitStagger} reduced={reduced} />
+              <Odometer
+                value={count}
+                from={from}
+                duration={countDuration}
+                reduced={reduced}
+              />
               <motion.p
                 className="text-2xl font-bold uppercase tracking-wide text-[#CEE2FF] sm:text-3xl"
                 initial={{ opacity: 0, y: 10 }}
