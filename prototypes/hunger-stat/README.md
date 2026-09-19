@@ -1,16 +1,17 @@
 # Hunger stat
 
-A **multi-stage typography reveal** on a royal-blue stage, built with **React + Framer Motion**
+A **multi-stage typography reveal** on a near-black (`#000A11`) stage with light-blue
+(`#CEE2FF`) type, built with **React + Framer Motion**
 and styled with **Tailwind CSS**. Type: **Doto** (black) for the rolling number, **IBM Plex
 Sans** for the copy (both via Google Fonts).
 
 1. **Odometer** — the number `200` rolls up, slot-machine style: each digit is a masked
    `overflow-hidden` cell holding a `0–9` column that springs to its target
    (`type: "spring", damping: 20, stiffness: 100`), with a slight stagger per column.
-2. **Subtext** — `BUILDERS` (green, bold, all-caps) fades in and slides up ~1.5s after the roll.
+2. **Subtext** — `BUILDERS` (bold, all-caps) fades in and slides up ~1.5s after the roll.
 3. **Hand-off** — at ~3s the whole `200 / BUILDERS` group slides up and fades out while,
    simultaneously, the final line enters from below.
-4. **Final message** — `Únetenos` (green) slides up into place exactly as the first group exits.
+4. **Final message** — `Únetenos` slides up into place exactly as the first group exits.
 
 `AnimatePresence` handles the mount/unmount of the two states; a single `step` state
 (`1 → 2`, flipped by a `useEffect` timeout) drives the swap.
@@ -36,9 +37,9 @@ import { StatReveal } from "@/components/StatReveal";
 | Prop            | Type      | Default            | Description                                                    |
 | --------------- | --------- | ------------------ | -------------------------------------------------------------- |
 | `count`         | `string`  | `"200"`            | Number the odometer rolls up to. Digits roll; other chars static. |
-| `unit`          | `string`  | `"BUILDERS"`       | Green, bold, all-caps line under the number (Phase 1).         |
-| `finalLead`     | `string`  | `""`               | White lead-in of the final message.                           |
-| `finalEmph`     | `string`  | `"Únetenos"`       | Green word that closes the final message.                     |
+| `unit`          | `string`  | `"BUILDERS"`       | Bold, all-caps line under the number (Phase 1).               |
+| `finalLead`     | `string`  | `""`               | Lead-in of the final message.                                |
+| `finalEmph`     | `string`  | `"Únetenos"`       | Word that closes the final message.                          |
 | `digitStagger`  | `number`  | `0.12`             | Seconds each digit column lags behind the previous.           |
 | `subtextDelay`  | `number`  | `1.5`              | Seconds after roll start before the subtext appears.          |
 | `phaseSwitchMs` | `number`  | `3000`             | Milliseconds Phase 1 holds before it exits and Phase 2 enters. |

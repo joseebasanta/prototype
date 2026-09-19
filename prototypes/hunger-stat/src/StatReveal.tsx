@@ -108,7 +108,7 @@ function Odometer({
   const digits = value.split("");
   return (
     <div
-      className="flex justify-center tracking-tight text-white"
+      className="flex justify-center tracking-tight text-[#CEE2FF]"
       style={{
         fontSize: DIGIT_H * 0.9,
         lineHeight: 1,
@@ -204,7 +204,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
             >
               <Odometer value={count} stagger={digitStagger} reduced={reduced} />
               <motion.p
-                className="text-2xl font-bold uppercase tracking-wide text-green-400 sm:text-3xl"
+                className="text-2xl font-bold uppercase tracking-wide text-[#CEE2FF] sm:text-3xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
@@ -232,8 +232,8 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
               }
             >
               <p className="max-w-[16ch] text-5xl font-bold leading-tight tracking-tight sm:text-6xl md:max-w-none">
-                <span className="text-white">{finalLead}</span>
-                <span className="text-green-400">{finalEmph}</span>
+                <span className="text-[#CEE2FF]">{finalLead}</span>
+                <span className="text-[#CEE2FF]">{finalEmph}</span>
               </p>
             </motion.div>
           )}
