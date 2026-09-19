@@ -9,7 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { cn } from "./lib/cn";
-import { FallingSquares } from "./FallingSquares";
+import { ShootingSquares } from "./ShootingSquares";
 
 /* ------------------------------------------------------------------ *
  * Tunable parameters — everything you'd want to nudge lives here.
@@ -37,9 +37,9 @@ const DEFAULTS = {
   finalHoldMs: 2600,
   /** Replay from the top forever (handy for previewing). */
   loop: false,
-  /** Show the playful raining-squares background layer. */
+  /** Show the shooting-squares background layer. */
   squares: true,
-  /** How many squares are raining at once. */
+  /** How many shooting squares are travelling at once. */
   squareCount: 18,
 };
 
@@ -214,8 +214,8 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
         )}
         {...props}
       >
-        {/* Playful ambient layer: little squares raining down behind it all. */}
-        {squares && <FallingSquares count={squareCount} />}
+        {/* Ambient layer: little squares shooting up like stars behind it all. */}
+        {squares && <ShootingSquares count={squareCount} />}
 
         {/* Both phases are absolutely centered so they overlap during the
             hand-off — Phase 2 enters exactly as Phase 1 exits. */}
