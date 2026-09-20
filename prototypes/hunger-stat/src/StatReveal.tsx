@@ -9,7 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { cn } from "./lib/cn";
-import { ShootingSquares } from "./ShootingSquares";
+import { TwinkleGrid } from "./TwinkleGrid";
 
 /* ------------------------------------------------------------------ *
  * Tunable parameters — everything you'd want to nudge lives here.
@@ -37,10 +37,8 @@ const DEFAULTS = {
   finalHoldMs: 2600,
   /** Replay from the top forever (handy for previewing). */
   loop: false,
-  /** Show the shooting-squares background layer. */
+  /** Show the twinkling cross-grid background layer. */
   squares: true,
-  /** How many shooting squares are travelling at once. */
-  squareCount: 18,
 };
 
 /** Height of one digit cell in px; the odometer translates by multiples of it.
@@ -59,7 +57,6 @@ export interface StatRevealProps extends React.HTMLAttributes<HTMLDivElement> {
   finalHoldMs?: number;
   loop?: boolean;
   squares?: boolean;
-  squareCount?: number;
 }
 
 /* ------------------------------------------------------------------ *
@@ -178,7 +175,6 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
       finalHoldMs = DEFAULTS.finalHoldMs,
       loop = DEFAULTS.loop,
       squares = DEFAULTS.squares,
-      squareCount = DEFAULTS.squareCount,
       className,
       ...props
     },
@@ -214,8 +210,8 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
         )}
         {...props}
       >
-        {/* Ambient layer: little squares shooting up like stars behind it all. */}
-        {squares && <ShootingSquares count={squareCount} />}
+        {/* Ambient layer: a faint twinkling grid of "+" marks behind it all. */}
+        {squares && <TwinkleGrid />}
 
         {/* Both phases are absolutely centered so they overlap during the
             hand-off — Phase 2 enters exactly as Phase 1 exits. */}

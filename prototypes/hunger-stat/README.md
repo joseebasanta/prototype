@@ -14,9 +14,10 @@ Plex Sans** for the copy (both via Google Fonts).
    simultaneously, the final line enters from below.
 4. **Final message** — `Únetenos` slides up into place exactly as the first group exits.
 
-Throughout, a **shooting-squares** layer (`ShootingSquares`) streaks little squares straight up
-the screen behind the text, each dragging a fading trail like a shooting star — randomized
-positions, sizes, speeds and trail lengths.
+Throughout, a subtle **twinkling cross-grid** (`TwinkleGrid`, canvas) sits behind the text: a
+full-bleed field of tiny "+" marks that gently fade their opacity up and down out of phase, like
+a faint animated cross-stitch texture. Kept deliberately low-opacity so it reads as texture, not
+noise. Toggle with the `squares` prop; disabled under `prefers-reduced-motion` (drawn static).
 
 `AnimatePresence` handles the mount/unmount of the two states; a single `step` state
 (`1 → 2`, flipped by a `useEffect` timeout) drives the swap.
@@ -51,8 +52,7 @@ import { StatReveal } from "@/components/StatReveal";
 | `phaseSwitchMs` | `number`  | `3000`             | Milliseconds Phase 1 holds before it exits and Phase 2 enters. |
 | `finalHoldMs`   | `number`  | `2600`             | Milliseconds Phase 2 holds before restarting (`loop` only).   |
 | `loop`          | `boolean` | `false`            | Replay from the top forever.                                  |
-| `squares`       | `boolean` | `true`             | Show the shooting-squares background layer.                   |
-| `squareCount`   | `number`  | `18`               | How many shooting squares travel at once.                    |
+| `squares`       | `boolean` | `true`             | Show the twinkling cross-grid background layer.               |
 
 Plus any `React.HTMLAttributes<HTMLDivElement>` (`className`, `style`, `id`, …).
 
