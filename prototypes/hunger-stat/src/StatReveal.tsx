@@ -223,7 +223,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
           {step === 1 && (
             <motion.div
               key={`phase1-${cycle}`}
-              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4"
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2"
               initial={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.55, ease: "easeIn" }}
