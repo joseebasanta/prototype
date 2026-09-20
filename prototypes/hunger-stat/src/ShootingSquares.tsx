@@ -22,7 +22,7 @@ export interface ShootingSquaresProps {
 
 export function ShootingSquares({
   count = 18,
-  color = "#CEE2FF",
+  color = "#0066FF",
 }: ShootingSquaresProps) {
   const reduced = useReducedMotion();
 

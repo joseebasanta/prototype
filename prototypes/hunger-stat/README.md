@@ -1,9 +1,9 @@
 # Hunger stat
 
-A **multi-stage typography reveal** on a near-black (`#000A11`) stage with light-blue
-(`#CEE2FF`) type, built with **React + Framer Motion**
-and styled with **Tailwind CSS**. Type: **Doto** (black) for the rolling number, **IBM Plex
-Sans** for the copy (both via Google Fonts).
+A **multi-stage typography reveal** on an off-white (`#F4F3F0`) stage with blue
+(`#0066FF`) type, built with **React + Framer Motion**
+and styled with **Tailwind CSS**. Type: **Silkscreen** (pixel) for the rolling number, **IBM
+Plex Sans** for the copy (both via Google Fonts).
 
 1. **Odometer** — a true rolling counter climbs from `from` (`173`) up to `200`: a single
    value counts up (easeOut, decelerating into the final number) and every digit wheel is

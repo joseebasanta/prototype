@@ -130,13 +130,13 @@ function Odometer({
 
   return (
     <div
-      className="flex justify-center tracking-tight text-[#CEE2FF]"
+      className="flex justify-center tracking-tight text-[#0066FF]"
       style={{
-        fontSize: DIGIT_H * 0.9,
+        fontSize: DIGIT_H * 0.72,
         lineHeight: 1,
-        // Doto (black) for the counter; monospace fallback keeps digits aligned.
-        fontFamily: '"Doto", ui-monospace, "SFMono-Regular", monospace',
-        fontWeight: 900,
+        // Silkscreen (pixel) for the counter; monospace fallback keeps alignment.
+        fontFamily: '"Silkscreen", ui-monospace, "SFMono-Regular", monospace',
+        fontWeight: 700,
       }}
     >
       {/* Real value for assistive tech; the rolling wheels are decorative. */}
@@ -235,7 +235,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
                 reduced={reduced}
               />
               <motion.p
-                className="text-2xl font-bold uppercase tracking-wide text-[#CEE2FF] sm:text-3xl"
+                className="text-2xl font-bold uppercase tracking-wide text-[#0066FF] sm:text-3xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
@@ -263,8 +263,8 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
               }
             >
               <p className="max-w-[16ch] text-5xl font-bold leading-tight tracking-tight sm:text-6xl md:max-w-none">
-                <span className="text-[#CEE2FF]">{finalLead}</span>
-                <span className="text-[#CEE2FF]">{finalEmph}</span>
+                <span className="text-[#0066FF]">{finalLead}</span>
+                <span className="text-[#0066FF]">{finalEmph}</span>
               </p>
             </motion.div>
           )}

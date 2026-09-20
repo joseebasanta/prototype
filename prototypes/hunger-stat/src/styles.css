@@ -9,9 +9,9 @@ body {
 
 body {
   margin: 0;
-  /* Near-black backdrop — the whole stage sits on this. */
-  background: #000a11;
-  color: #cee2ff;
+  /* Off-white backdrop — the whole stage sits on this. */
+  background: #f4f3f0;
+  color: #0066ff;
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
