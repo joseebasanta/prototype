@@ -235,7 +235,7 @@ export const StatReveal = React.forwardRef<HTMLDivElement, StatRevealProps>(
                 reduced={reduced}
               />
               <motion.p
-                className="text-2xl font-bold uppercase tracking-wide text-[#0066FF] sm:text-3xl"
+                className="-mt-[23px] text-2xl font-bold uppercase tracking-wide text-[#0066FF] sm:text-3xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
